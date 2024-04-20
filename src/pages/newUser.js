@@ -3,7 +3,7 @@ import { TextField, Box, Typography, Button } from "@mui/material";
 import Link from "next/link";
 import React from "react";
 
-function page() {
+function newUser() {
   return (
     <Box
       component="section"
@@ -15,7 +15,7 @@ function page() {
       >
         <Box component="section" className="m-24">
           <Typography variant="h2" className="text-center font-bold" mb={4}>
-            User Login
+            Registration
           </Typography>
           <Box component="section" className="flex flex-col gap-6">
             <TextField color="success" label="Username" id="outlined-basic" />
@@ -41,4 +41,4 @@ function page() {
   );
 }
 
-export default page;
+export default newUser;

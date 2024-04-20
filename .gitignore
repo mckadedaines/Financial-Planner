@@ -6,6 +6,9 @@
 .pnp.js
 .yarn/install-state.gz
 
+#Firebase Config
+firebaseConfig.js
+
 # testing
 /coverage
 
