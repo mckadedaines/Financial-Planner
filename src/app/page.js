@@ -1,9 +1,11 @@
 "use client";
 import { TextField, Box, Typography, Button } from "@mui/material";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 function page() {
+  const router = useRouter();
+
   return (
     <Box
       component="section"
@@ -24,16 +26,20 @@ function page() {
               variant="contained"
               color="success"
               onClick={() => {
-                alert("Success!");
+                router.push("/dashboard");
               }}
             >
               Login
             </Button>
-            <Link href="/newUser">
-              <Button variant="outlined" color="success">
-                Need an account?
-              </Button>
-            </Link>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={() => {
+                router.push("/newUser");
+              }}
+            >
+              Need an account?
+            </Button>
           </Box>
         </Box>
       </Box>
