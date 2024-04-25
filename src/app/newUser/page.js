@@ -4,9 +4,10 @@ import React, { useState } from "react";
 import registerUser from "@/app/backend/loginBackend/user";
 import { useRouter } from "next/navigation";
 
-function newUser() {
+function NewUser() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const router = useRouter();
 
@@ -20,6 +21,7 @@ function newUser() {
       router.push("/");
     } catch (error) {
       console.error("Error registering user:", error);
+      setErrorMessage(error.message);
     }
   };
 
@@ -42,9 +44,12 @@ function newUser() {
               color="success"
               label="Email"
               id="outlined-basic"
+              error={Boolean(errorMessage)} // Show error state if there's an error message
+              helperText={errorMessage} // Display error message if there's an error
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
+                setErrorMessage(""); // Clear error message on input change
               }}
             />
             <TextField
@@ -59,6 +64,15 @@ function newUser() {
             <Button variant="contained" color="success" type="submit">
               Register
             </Button>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={() => {
+                router.push("/");
+              }}
+            >
+              Already have an account? Sign in!
+            </Button>
           </Box>
         </Box>
       </Box>
@@ -66,4 +80,4 @@ function newUser() {
   );
 }
 
-export default newUser;
+export default NewUser;
