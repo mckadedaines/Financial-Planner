@@ -1,7 +1,50 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../backend/firebaseConfig";
+import { Box, Typography, Grid } from "@mui/material";
+import MoneyTracker from "../components/MoneyTracker";
+import PurchaseHistory from "../components/PurchaseHistory";
+import PurchaseHistoryPieChart from "../components/PurchaseHistoryPieChart";
 
-function Dashboard() {
-  return <div>hello world!</div>;
+function Page() {
+  const [userUid, setUserUid] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserUid(user.uid);
+      } else {
+        setUserUid(null);
+      }
+    });
+    return () => unsubscribe(); // Clean up on unmount
+  }, []);
+
+  return (
+    <Box className="bg-gray-700 pt-10 h-screen">
+      <Typography
+        variant="h2"
+        align="center"
+        className="text-slate-100 mb-6 font-bold"
+      >
+        Dashboard
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <PurchaseHistoryPieChart userUid={userUid} />
+        </Grid>
+        <Grid item xs={6}>
+          <MoneyTracker />
+        </Grid>
+      </Grid>
+      <Grid container>
+        <Grid item xs={12}>
+          <PurchaseHistory userUid={userUid} />
+        </Grid>
+      </Grid>
+    </Box>
+  );
 }
 
-export default Dashboard;
+export default Page;

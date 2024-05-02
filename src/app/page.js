@@ -80,6 +80,7 @@ function Page() {
               required
               color="success"
               label="Password"
+              type="password"
               id="outlined-basic"
               helperText={passwordError ? "Please enter a valid password" : ""}
               InputProps={{
