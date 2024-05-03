@@ -1,9 +1,17 @@
 "use client";
-import { Box, TextField, Button, Typography, Rating } from "@mui/material";
-import InputAdornment from "@mui/material/InputAdornment";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Rating,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+} from "@mui/material";
 import React, { useState } from "react";
 import addMoneyTracker from "@/app/backend/MoneyTracker/moneyTracker";
-import { FormControl, InputLabel, Select } from "@mui/material";
 
 function MoneyTracker() {
   const [moneySpent, setMoneySpent] = useState(0);
@@ -27,73 +35,83 @@ function MoneyTracker() {
   return (
     <Box
       component="section"
-      className="flex flex-col items-center space-y-4 rounded-xl pl-14 pr-14 pt-5 pb-5 bg-slate-200"
+      className="flex flex-col items-center justify-between space-y-4 rounded-xl pl-14 pr-14 pt-5 pb-5 bg-slate-200"
+      style={{ height: "100%" }} // Ensuring the component fills the parent's height
     >
       <Typography variant="h4" className="text-center font-bold">
         Money Tracker
       </Typography>
-      <TextField
-        required
-        label="What was Bought?"
-        variant="outlined"
-        type="text"
-        sx={{
-          width: "300px",
-          margin: "20px",
-          backgroundColor: "white",
-          borderRadius: "5px",
-        }}
-        value={bought}
-        onChange={(e) => setBought(e.target.value)}
-      />
-      <TextField
-        required
-        label="Money Spent"
-        variant="outlined"
-        type="number"
-        sx={{
-          width: "300px",
-          margin: "20px",
-          backgroundColor: "white",
-          borderRadius: "5px",
-        }}
-        value={moneySpent}
-        onChange={(e) => setMoneySpent(e.target.value)}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">$</InputAdornment>,
-        }}
-      />
-      <FormControl
-        variant="outlined"
-        sx={{
-          width: "300px",
-          margin: "20px",
-          backgroundColor: "white",
-          borderRadius: "5px",
+      <div
+        style={{
+          flex: 1,
+          alignSelf: "stretch",
+          width: "100%",
+          overflow: "auto",
         }}
       >
-        <InputLabel htmlFor="category">Category</InputLabel>
-        <Select
-          native
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          label="Category"
-          inputProps={{
-            name: "category",
-            id: "category",
+        <TextField
+          required
+          label="What was Bought?"
+          variant="outlined"
+          type="text"
+          sx={{
+            width: "300px",
+            margin: "20px",
+            backgroundColor: "white",
+            borderRadius: "5px",
+          }}
+          value={bought}
+          onChange={(e) => setBought(e.target.value)}
+        />
+        <TextField
+          required
+          label="Money Spent"
+          variant="outlined"
+          type="number"
+          sx={{
+            width: "300px",
+            margin: "20px",
+            backgroundColor: "white",
+            borderRadius: "5px",
+          }}
+          value={moneySpent}
+          onChange={(e) => setMoneySpent(e.target.value)}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+          }}
+        />
+        <FormControl
+          variant="outlined"
+          sx={{
+            width: "300px",
+            margin: "20px",
+            backgroundColor: "white",
+            borderRadius: "5px",
           }}
         >
-          <option aria-label="None" value="" />
-          <option value="Food">🍔 Food</option>
-          <option value="Clothing">👖 Clothing</option>
-          <option value="Electronics">⛽ Fuel/Gas</option>
-          <option value="Housing">🏡 Housing</option>
-          <option value="Transportation">🚗 Vehicle</option>
-          <option value="Entertainment">🎥 Entertainment</option>
-          <option value="Savings">💰 Savings</option>
-          <option value="Other">🛒 Other</option>
-        </Select>
-      </FormControl>
+          <InputLabel htmlFor="category">Category</InputLabel>
+          <Select
+            native
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            label="Category"
+            inputProps={{
+              name: "category",
+              id: "category",
+            }}
+          >
+            <option aria-label="None" value="" />
+            <option value="Food">🍔 Food</option>
+            <option value="Clothing">👖 Clothing</option>
+            <option value="Electronics">⛽ Fuel/Gas</option>
+            <option value="Housing">🏡 Housing</option>
+            <option value="Transportation">🚗 Vehicle</option>
+            <option value="Entertainment">🎥 Entertainment</option>
+            <option value="Savings">💰 Savings</option>
+            <option value="Other">🛒 Other</option>
+          </Select>
+        </FormControl>
+      </div>
       <Typography variant="h6" className="text-center font-bold">
         What would you rate this purchase?
       </Typography>
@@ -112,9 +130,7 @@ function MoneyTracker() {
         variant="contained"
         color="success"
         type="submit"
-        onClick={() => {
-          handleSubmit(bought, moneySpent, rating);
-        }}
+        onClick={() => handleSubmit(bought, moneySpent, rating)}
       >
         Submit
       </Button>

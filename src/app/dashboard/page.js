@@ -30,12 +30,36 @@ function Page() {
       >
         Dashboard
       </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <PurchaseHistoryPieChart userUid={userUid} />
+      <Grid container spacing={2} style={{ alignItems: "stretch" }}>
+        <Grid item xs={6} style={{ display: "flex", flexDirection: "column" }}>
+          <Box
+            style={{
+              width: "100%",
+              flexGrow: 1, // Make the box grow to fill the space
+              padding: "20px",
+              backgroundColor: "#2D3748",
+              borderRadius: "8px",
+            }}
+          >
+            <PurchaseHistoryPieChart userUid={userUid} />
+          </Box>
         </Grid>
-        <Grid item xs={6}>
-          <MoneyTracker />
+        <Grid
+          item
+          xs={5.8}
+          style={{ display: "flex", flexDirection: "column" }}
+        >
+          <Box
+            style={{
+              width: "100%",
+              flexGrow: 1, // Make the box grow to fill the space
+              padding: "20px",
+              backgroundColor: "#2D3748",
+              borderRadius: "8px",
+            }}
+          >
+            <MoneyTracker userUid={userUid} />
+          </Box>
         </Grid>
       </Grid>
       <Grid container>

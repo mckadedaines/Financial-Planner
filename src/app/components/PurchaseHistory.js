@@ -30,16 +30,23 @@ function PurchaseHistory({ userUid }) {
   }, [userUid]);
 
   const columns = [
-    { field: "bought", headerName: "Item Purchased", width: 200 },
+    { field: "bought", headerName: "Item Purchased", flex: 1, minWidth: 150 }, // Using flex and minWidth for responsiveness
     {
       field: "moneySpent",
       headerName: "Money Spent",
       type: "number",
-      width: 150,
+      flex: 1,
+      minWidth: 120,
     },
-    { field: "category", headerName: "Category", width: 150 },
-    { field: "rating", headerName: "Rating", type: "number", width: 120 },
-    { field: "timestamp", headerName: "Purchase Time", width: 200 },
+    { field: "category", headerName: "Category", flex: 1, minWidth: 130 },
+    {
+      field: "rating",
+      headerName: "Rating",
+      type: "number",
+      flex: 1,
+      minWidth: 100,
+    },
+    { field: "timestamp", headerName: "Purchase Time", flex: 1, minWidth: 180 },
   ];
 
   return (
@@ -72,6 +79,13 @@ function PurchaseHistory({ userUid }) {
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               color: "black",
+            },
+            "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
+              {
+                color: "white", // Change Rows per page section text and pagination display text color to white
+              },
+            "& .MuiTablePagination-select, & .MuiInputBase-input": {
+              color: "white", // Change select input text color
             },
           }}
         />
