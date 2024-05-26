@@ -3,5 +3,10 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "include": [
+    "**/*",
+    "./src/app/backend/MoneyTracker/aiService.js",
+    "./src/app/components/financialAdvice.js" // Add the missing file to the include patterns
+  ]
 }
