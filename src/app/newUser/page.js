@@ -12,12 +12,12 @@ function NewUser() {
   const router = useRouter();
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Ensure to prevent the default form submission
+    event.preventDefault();
     try {
       await registerUser(email, password);
       console.log("User Registered!");
-      setEmail(""); // Clear email
-      setPassword(""); // Clear password
+      setEmail("");
+      setPassword("");
       router.push("/");
     } catch (error) {
       console.error("Error registering user:", error);
@@ -44,13 +44,14 @@ function NewUser() {
               color="success"
               label="Email"
               id="outlined-basic"
-              error={Boolean(errorMessage)} // Show error state if there's an error message
-              helperText={errorMessage} // Display error message if there's an error
+              error={Boolean(errorMessage)}
+              helperText={errorMessage}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setErrorMessage(""); // Clear error message on input change
+                setErrorMessage("");
               }}
+              inputProps={{ 'data-cy': 'email' }}
             />
             <TextField
               color="success"
@@ -60,8 +61,14 @@ function NewUser() {
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
+              inputProps={{ 'data-cy': 'password' }}
             />
-            <Button variant="contained" color="success" type="submit">
+            <Button
+              variant="contained"
+              color="success"
+              type="submit"
+              data-cy="submit"
+            >
               Register
             </Button>
             <Button

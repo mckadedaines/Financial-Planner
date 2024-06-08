@@ -18,20 +18,19 @@ function Page() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      // Set error if any field is empty
       setEmailError(!email);
       setPasswordError(!password);
       return;
     }
-
-    // Reset errors on new submission attempt
+  
     setError("");
     setEmailError(false);
     setPasswordError(false);
-
+  
     try {
-      await signInUser(email, password);
-      console.log("User signed in!");
+      const userCredential = await signInUser(email, password);
+      const idToken = await userCredential.user.getIdToken();
+      console.log("User signed in with token:", idToken);
       router.push("/Dashboard");
     } catch (error) {
       setError("Invalid email or password");
@@ -39,7 +38,7 @@ function Page() {
       setPasswordError(true);
       console.error("Error signing in user:", error);
     }
-  };
+  };  
 
   return (
     <Box
@@ -74,6 +73,7 @@ function Page() {
                 setEmail(e.target.value);
                 setEmailError(false);
               }}
+              inputProps={{ 'data-cy': 'email' }}
             />
             <TextField
               error={passwordError}
@@ -95,17 +95,20 @@ function Page() {
                 setPassword(e.target.value);
                 setPasswordError(false);
               }}
+              inputProps={{ 'data-cy': 'password' }}
             />
             <Button
               variant="contained"
               color="success"
               type="submit"
               onClick={handleLogin}
+              data-cy="login"
             >
               Login
             </Button>
             {error && <Typography color="error">{error}</Typography>}
             <Button
+              data-cy="register"
               variant="outlined"
               color="success"
               onClick={() => {
