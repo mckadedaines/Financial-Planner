@@ -18,6 +18,7 @@ function MoneyTracker() {
   const [bought, setBought] = useState("");
   const [rating, setRating] = useState(0);
   const [category, setCategory] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async () => {
     try {
@@ -27,6 +28,7 @@ function MoneyTracker() {
       setBought("");
       setRating(0);
       setCategory("");
+      setSuccessMessage("Money tracker entry created successfully.");
     } catch (error) {
       console.error("Money tracker entry creation failed:", error);
     }
@@ -38,7 +40,11 @@ function MoneyTracker() {
       className="flex flex-col items-center justify-between space-y-4 rounded-xl pl-14 pr-14 pt-5 pb-5 bg-slate-200"
       style={{ height: "100%" }} // Ensuring the component fills the parent's height
     >
-      <Typography variant="h4" className="text-center font-bold">
+      <Typography
+        variant="h4"
+        className="text-center font-bold"
+        data-cy="title"
+      >
         Money Tracker
       </Typography>
       <div
@@ -62,6 +68,7 @@ function MoneyTracker() {
           }}
           value={bought}
           onChange={(e) => setBought(e.target.value)}
+          inputProps={{ "data-cy": "bought-input" }}
         />
         <TextField
           required
@@ -79,6 +86,7 @@ function MoneyTracker() {
           InputProps={{
             startAdornment: <InputAdornment position="start">$</InputAdornment>,
           }}
+          inputProps={{ "data-cy": "money-spent-input" }}
         />
         <FormControl
           variant="outlined"
@@ -98,6 +106,7 @@ function MoneyTracker() {
             inputProps={{
               name: "category",
               id: "category",
+              "data-cy": "category-select",
             }}
           >
             <option aria-label="None" value="" />
@@ -125,15 +134,22 @@ function MoneyTracker() {
         onChange={(event, newValue) => {
           setRating(newValue);
         }}
+        data-cy="rating"
       />
       <Button
         variant="contained"
         color="success"
         type="submit"
         onClick={() => handleSubmit(bought, moneySpent, rating)}
+        data-cy="submit-button"
       >
         Submit
       </Button>
+      {successMessage && (
+        <Typography variant="body1" color="success" data-cy="success-message">
+          {successMessage}
+        </Typography>
+      )}
     </Box>
   );
 }
