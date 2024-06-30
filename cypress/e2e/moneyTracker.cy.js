@@ -5,7 +5,7 @@ describe("MoneyTracker Component", () => {
 
     // Perform login
     cy.get("[data-cy=email]").type("admin@admin.com");
-    cy.get("[data-cy=password]").type("Test123456!");
+    cy.get("[data-cy=password]").type("123456");
     cy.get("[data-cy=login]").click();
 
     // Wait for redirection to Dashboard
