@@ -6,6 +6,7 @@ import { signInUser } from "./backend/loginBackend/user";
 import InputAdornment from "@mui/material/InputAdornment";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import KeyIcon from "@mui/icons-material/Key";
+import CanvasBackground from "./components/CanvasBackground";
 
 function Page() {
   const [email, setEmail] = useState("");
@@ -22,11 +23,11 @@ function Page() {
       setPasswordError(!password);
       return;
     }
-  
+
     setError("");
     setEmailError(false);
     setPasswordError(false);
-  
+
     try {
       const userCredential = await signInUser(email, password);
       const idToken = await userCredential.user.getIdToken();
@@ -38,13 +39,14 @@ function Page() {
       setPasswordError(true);
       console.error("Error signing in user:", error);
     }
-  };  
+  };
 
   return (
     <Box
       component="section"
-      className="flex h-screen justify-center items-center bg-gray-700"
+      className="flex h-screen justify-center items-center"
     >
+      <CanvasBackground />
       <Box
         component="section"
         className="flex flex-col items-center space-y-4 rounded-xl pl-10 pr-10 bg-slate-200"
@@ -73,7 +75,7 @@ function Page() {
                 setEmail(e.target.value);
                 setEmailError(false);
               }}
-              inputProps={{ 'data-cy': 'email' }}
+              inputProps={{ "data-cy": "email" }}
             />
             <TextField
               error={passwordError}
@@ -95,7 +97,7 @@ function Page() {
                 setPassword(e.target.value);
                 setPasswordError(false);
               }}
-              inputProps={{ 'data-cy': 'password' }}
+              inputProps={{ "data-cy": "password" }}
             />
             <Button
               variant="contained"

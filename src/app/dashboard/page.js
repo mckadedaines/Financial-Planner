@@ -7,6 +7,7 @@ import MoneyTracker from "../components/MoneyTracker";
 import PurchaseHistory from "../components/PurchaseHistory";
 import PurchaseHistoryPieChart from "../components/PurchaseHistoryPieChart";
 import ChatGPTComponent from "../components/ChatGptComponent";
+import CanvasBackground from "../components/CanvasBackground"; // Import CanvasBackground
 
 function Page() {
   const [userUid, setUserUid] = useState(null);
@@ -24,7 +25,6 @@ function Page() {
 
   return (
     <Box
-      className="bg-gray-700 pt-10"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -32,8 +32,10 @@ function Page() {
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
+        position: "relative", // Ensure that the background canvas is properly positioned
       }}
     >
+      <CanvasBackground /> {/* Add CanvasBackground here */}
       <Typography
         variant="h2"
         align="center"
@@ -42,7 +44,12 @@ function Page() {
         Dashboard
       </Typography>
       <Grid container spacing={2} style={{ alignItems: "stretch" }}>
-        <Grid item xs={12} md={6} style={{ display: "flex", flexDirection: "column" }}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          style={{ display: "flex", flexDirection: "column" }}
+        >
           <Paper
             style={{
               width: "100%",
@@ -55,7 +62,12 @@ function Page() {
             <PurchaseHistoryPieChart userUid={userUid} />
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6} style={{ display: "flex", flexDirection: "column" }}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          style={{ display: "flex", flexDirection: "column" }}
+        >
           <Paper
             style={{
               width: "100%",

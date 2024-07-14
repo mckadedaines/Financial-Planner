@@ -3,6 +3,7 @@ import { TextField, Box, Typography, Button } from "@mui/material";
 import React, { useState } from "react";
 import registerUser from "@/app/backend/loginBackend/user";
 import { useRouter } from "next/navigation";
+import CanvasBackground from "../components/CanvasBackground";
 
 function NewUser() {
   const [email, setEmail] = useState("");
@@ -29,8 +30,9 @@ function NewUser() {
     <Box
       onSubmit={handleSubmit}
       component="form"
-      className="flex h-screen justify-center items-center bg-gray-700"
+      className="flex h-screen justify-center items-center"
     >
+      <CanvasBackground />
       <Box
         component="section"
         className="flex flex-col items-center space-y-4 rounded-xl pl-10 pr-10 bg-slate-200"
@@ -51,7 +53,7 @@ function NewUser() {
                 setEmail(e.target.value);
                 setErrorMessage("");
               }}
-              inputProps={{ 'data-cy': 'email' }}
+              inputProps={{ "data-cy": "email" }}
             />
             <TextField
               color="success"
@@ -61,7 +63,7 @@ function NewUser() {
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
-              inputProps={{ 'data-cy': 'password' }}
+              inputProps={{ "data-cy": "password" }}
             />
             <Button
               variant="contained"

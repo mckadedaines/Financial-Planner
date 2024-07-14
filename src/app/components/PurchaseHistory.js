@@ -3,30 +3,36 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { db } from "../backend/firebaseConfig";
-import { collection, query, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 
 function PurchaseHistory({ userUid }) {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    if (userUid) {
-      const fetchData = async () => {
-        const purchasesRef = collection(
-          db,
-          "moneyTracker",
-          userUid,
-          "purchases"
-        );
-        const querySnapshot = await getDocs(purchasesRef);
+    if (!userUid) {
+      console.warn("No user UID provided");
+      return;
+    }
+
+    const purchasesRef = collection(db, "moneyTracker", userUid, "purchases");
+
+    const unsubscribe = onSnapshot(
+      purchasesRef,
+      (querySnapshot) => {
         const purchases = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
           timestamp: doc.data().timestamp.toDate().toLocaleString(),
         }));
         setRows(purchases);
-      };
-      fetchData();
-    }
+      },
+      (error) => {
+        console.error("Error fetching or processing data:", error);
+      }
+    );
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [userUid]);
 
   const columns = [
