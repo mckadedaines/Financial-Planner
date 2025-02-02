@@ -3,15 +3,18 @@
  * Provides a form for email/password login and navigation to registration
  */
 "use client";
-import { TextField, Box, Typography, Button } from "@mui/material";
+import { TextField, Box, Typography, Button, IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { signInUser } from "./backend/loginBackend/user";
 import InputAdornment from "@mui/material/InputAdornment";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import KeyIcon from "@mui/icons-material/Key";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import CanvasBackground from "./components/CanvasBackground";
 import Card from "./components/common/Card";
+import { useThemeContext } from "./theme/ThemeProvider";
 
 function Page() {
   const [email, setEmail] = useState("");
@@ -19,6 +22,7 @@ function Page() {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [error, setError] = useState("");
+  const { mode, toggleTheme } = useThemeContext();
 
   const router = useRouter();
 
@@ -73,7 +77,11 @@ function Page() {
           maxWidth: "450px",
           position: "relative",
           zIndex: 2,
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          backgroundColor: (theme) =>
+            theme.palette.mode === "dark"
+              ? "rgba(31, 41, 55, 0.9)"
+              : "rgba(255, 255, 255, 0.9)",
+          backdropFilter: "blur(10px)",
         }}
       >
         <Box
@@ -110,7 +118,7 @@ function Page() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <AccountCircle color="action" />
+                    <AccountCircle />
                   </InputAdornment>
                 ),
               }}
@@ -123,11 +131,14 @@ function Page() {
               sx={{
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: "text.primary",
+                    borderColor: "primary.main",
                   },
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "text.primary",
+                  color: "primary.main",
+                },
+                "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+                  color: "text.secondary",
                 },
               }}
             />
@@ -142,7 +153,7 @@ function Page() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <KeyIcon color="action" />
+                    <KeyIcon />
                   </InputAdornment>
                 ),
               }}
@@ -155,17 +166,20 @@ function Page() {
               sx={{
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: "text.primary",
+                    borderColor: "primary.main",
                   },
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "text.primary",
+                  color: "primary.main",
+                },
+                "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+                  color: "text.secondary",
                 },
               }}
             />
             <Button
               variant="contained"
-              color="inherit"
+              color="primary"
               size="large"
               fullWidth
               onClick={handleLogin}
@@ -174,16 +188,13 @@ function Page() {
                 py: 1.5,
                 textTransform: "none",
                 fontSize: "1rem",
-                color: "white",
-                bgcolor: "text.primary",
                 backdropFilter: "blur(10px)",
                 transition: "all 0.3s ease-in-out",
                 boxShadow: "none",
                 "&:hover": {
-                  bgcolor: "text.primary",
                   opacity: 0.9,
                   boxShadow: (theme) =>
-                    `0 0 20px ${theme.palette.text.primary}`,
+                    `0 0 20px ${theme.palette.primary.main}`,
                   backdropFilter: "blur(20px)",
                   transform: "translateY(-2px)",
                 },
@@ -199,22 +210,20 @@ function Page() {
             <Button
               data-cy="register"
               variant="outlined"
-              color="inherit"
+              color="primary"
               size="large"
               onClick={() => router.push("/register")}
               sx={{
                 py: 1.5,
                 textTransform: "none",
                 fontSize: "1rem",
-                color: "text.primary",
-                borderColor: "text.primary",
                 backdropFilter: "blur(10px)",
                 transition: "all 0.3s ease-in-out",
                 "&:hover": {
-                  borderColor: "text.primary",
-                  bgcolor: "rgba(255, 255, 255, 0.1)",
+                  borderColor: "primary.main",
+                  bgcolor: "action.hover",
                   boxShadow: (theme) =>
-                    `0 0 20px ${theme.palette.text.primary}`,
+                    `0 0 20px ${theme.palette.primary.main}`,
                   backdropFilter: "blur(20px)",
                   transform: "translateY(-2px)",
                 },
@@ -222,6 +231,33 @@ function Page() {
             >
               Create an Account
             </Button>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 1,
+                mt: 1,
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                {mode === "dark" ? "Dark" : "Light"} mode
+              </Typography>
+              <IconButton
+                onClick={toggleTheme}
+                size="small"
+                sx={{
+                  color: "text.secondary",
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": {
+                    color: "primary.main",
+                    transform: "scale(1.1)",
+                  },
+                }}
+              >
+                {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Box>
           </Box>
         </Box>
       </Card>
