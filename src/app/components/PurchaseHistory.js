@@ -53,18 +53,41 @@ function PurchaseHistory({ userUid }) {
   }, [userUid]);
 
   const columns = [
-    { field: "bought", headerName: "Item Purchased", flex: 1, minWidth: 150 },
+    {
+      field: "bought",
+      headerName: "Item Purchased",
+      flex: 1,
+      minWidth: 150,
+    },
     {
       field: "moneySpent",
       headerName: "Money Spent",
       type: "number",
       flex: 1,
       minWidth: 120,
-      renderCell: (params) => {
-        return `$${Number(params.row.moneySpent).toFixed(2)}`;
-      },
+      renderCell: (params) => (
+        <Typography
+          sx={{
+            color: "#ef4444",
+            fontWeight: "bold",
+            width: "100%",
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "right",
+            height: "100%",
+          }}
+        >
+          ${Number(params.row.moneySpent).toFixed(2)}
+        </Typography>
+      ),
     },
-    { field: "category", headerName: "Category", flex: 1, minWidth: 130 },
+    {
+      field: "category",
+      headerName: "Category",
+      flex: 1,
+      minWidth: 130,
+    },
     {
       field: "rating",
       headerName: "Rating",
@@ -72,7 +95,12 @@ function PurchaseHistory({ userUid }) {
       flex: 1,
       minWidth: 100,
     },
-    { field: "timestamp", headerName: "Purchase Time", flex: 1, minWidth: 180 },
+    {
+      field: "timestamp",
+      headerName: "Purchase Time",
+      flex: 1,
+      minWidth: 180,
+    },
   ];
 
   return (
@@ -97,6 +125,11 @@ function PurchaseHistory({ userUid }) {
             rowsPerPageOptions={[5]}
             checkboxSelection
             density="comfortable"
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "timestamp", sort: "desc" }],
+              },
+            }}
             sx={{
               border: "none",
               "& .MuiDataGrid-cell": {
@@ -144,7 +177,7 @@ function PurchaseHistory({ userUid }) {
                   }}
                 >
                   <Typography sx={{ color: "text.secondary" }}>
-                    No purchase history found.
+                    No transaction history found.
                   </Typography>
                 </Box>
               ),

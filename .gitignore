@@ -6,8 +6,29 @@
 .pnp.js
 .yarn/install-state.gz
 
-#Firebase Config
+# Firebase Config and Secrets
 firebaseConfig.js
+**/firebase-admin*.json
+**/firebase-config*.json
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc
+firebase.json
+
+# Environment Variables and Secrets
+.env
+.env.*
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+.secret*
+secrets/
+credentials/
+config.json
 
 # testing
 /coverage
@@ -22,18 +43,23 @@ firebaseConfig.js
 # misc
 .DS_Store
 *.pem
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# local env files
-.env*.local
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+debug.log
+*.log
 
 # vercel
 .vercel
@@ -41,3 +67,23 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

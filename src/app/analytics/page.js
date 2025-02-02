@@ -7,42 +7,212 @@ import GridLayout, {
   FullWidthGrid,
 } from "../components/common/GridLayout";
 import { Typography, Box, Tab, Tabs } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BarChart, LineChart, PieChart } from "@mui/x-charts";
-
-// Sample data - replace with real data from your backend
-const monthlyData = [
-  { month: "Jan", income: 4500, expenses: 3200 },
-  { month: "Feb", income: 4800, expenses: 3100 },
-  { month: "Mar", income: 4600, expenses: 3300 },
-  { month: "Apr", income: 5000, expenses: 3400 },
-  { month: "May", income: 4900, expenses: 3200 },
-  { month: "Jun", income: 5200, expenses: 3600 },
-];
-
-const categoryData = [
-  { id: 0, value: 35, label: "Housing" },
-  { id: 1, value: 25, label: "Food" },
-  { id: 2, value: 15, label: "Transport" },
-  { id: 3, value: 10, label: "Entertainment" },
-  { id: 4, value: 15, label: "Others" },
-];
-
-const savingsData = [
-  { month: "Jan", amount: 1300 },
-  { month: "Feb", amount: 1700 },
-  { month: "Mar", amount: 1300 },
-  { month: "Apr", amount: 1600 },
-  { month: "May", amount: 1700 },
-  { month: "Jun", amount: 1600 },
-];
+import { onAuthStateChanged } from "firebase/auth";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+} from "firebase/firestore";
+import { auth, db } from "../backend/firebaseConfig";
+import { CircularProgress } from "@mui/material";
+import { getMonthlyIncome } from "../backend/MoneyTracker/budgetManager";
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState(0);
+  const [userUid, setUserUid] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [analyticsData, setAnalyticsData] = useState({
+    monthlyData: [],
+    categoryData: [],
+    savingsData: [],
+  });
+
+  // Handle authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserUid(user.uid);
+      } else {
+        setUserUid(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []); // Empty dependency array since we only want this to run once
+
+  // Fetch and process transaction and income data
+  useEffect(() => {
+    if (!userUid) {
+      setLoading(false);
+      return;
+    }
+
+    let isSubscribed = true;
+    let unsubscribeSnapshot = null;
+
+    async function fetchData() {
+      try {
+        setLoading(true);
+        // Get monthly income first
+        const monthlyIncome = await getMonthlyIncome(userUid);
+
+        const purchasesRef = collection(
+          db,
+          "moneyTracker",
+          userUid,
+          "purchases"
+        );
+        const q = query(purchasesRef, orderBy("timestamp", "desc"));
+
+        unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
+          if (!isSubscribed) return;
+
+          const now = new Date();
+          const sixMonthsAgo = new Date(
+            now.getFullYear(),
+            now.getMonth() - 6,
+            1
+          );
+          const yearStart = new Date(now.getFullYear(), 0, 1);
+          const lastYear = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+
+          const startDate =
+            timeRange === 1
+              ? yearStart
+              : timeRange === 2
+              ? lastYear
+              : sixMonthsAgo;
+
+          const transactions = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            timestamp: doc.data().timestamp.toDate(),
+            type: doc.data().type || "expense",
+            amount:
+              Number(doc.data().moneySpent) || Number(doc.data().amount) || 0,
+          }));
+
+          const filteredTransactions = transactions.filter(
+            (t) => t.timestamp >= startDate
+          );
+
+          // Process monthly data
+          const monthlyDataMap = new Map();
+          const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
+
+          // Initialize months
+          for (
+            let d = new Date(startDate);
+            d <= now;
+            d.setMonth(d.getMonth() + 1)
+          ) {
+            const monthKey = months[d.getMonth()];
+            monthlyDataMap.set(monthKey, {
+              month: monthKey,
+              expenses: 0,
+              income: monthlyIncome, // Set base monthly income
+            });
+          }
+
+          // Process transactions
+          const categoryMap = new Map();
+          filteredTransactions.forEach((t) => {
+            const monthKey = months[t.timestamp.getMonth()];
+            const amount = t.amount;
+
+            if (monthlyDataMap.has(monthKey)) {
+              const monthData = monthlyDataMap.get(monthKey);
+              if (t.type === "income") {
+                monthData.income += amount;
+              } else {
+                monthData.expenses += amount;
+                categoryMap.set(
+                  t.category,
+                  (categoryMap.get(t.category) || 0) + amount
+                );
+              }
+            }
+          });
+
+          const totalExpenses = filteredTransactions
+            .filter((t) => t.type !== "income")
+            .reduce((acc, t) => acc + t.amount, 0);
+
+          const newAnalyticsData = {
+            monthlyData: Array.from(monthlyDataMap.values()),
+            categoryData: Array.from(categoryMap.entries()).map(
+              ([label, value], id) => ({
+                id,
+                label,
+                value: totalExpenses
+                  ? Math.round((value / totalExpenses) * 100)
+                  : 0,
+              })
+            ),
+            savingsData: Array.from(monthlyDataMap.values()).map((m) => ({
+              month: m.month,
+              amount: m.income - m.expenses,
+            })),
+          };
+
+          if (isSubscribed) {
+            setAnalyticsData(newAnalyticsData);
+            setLoading(false);
+          }
+        });
+      } catch (error) {
+        console.error("Error setting up analytics:", error);
+        if (isSubscribed) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchData();
+
+    return () => {
+      isSubscribed = false;
+      if (unsubscribeSnapshot) {
+        unsubscribeSnapshot();
+      }
+    };
+  }, [userUid, timeRange]);
 
   const handleTimeRangeChange = (event, newValue) => {
     setTimeRange(newValue);
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "80vh",
+          }}
+        >
+          <CircularProgress sx={{ color: "#10b981" }} />
+        </Box>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -91,18 +261,18 @@ export default function AnalyticsPage() {
               <BarChart
                 xAxis={[
                   {
-                    data: monthlyData.map((d) => d.month),
+                    data: analyticsData.monthlyData.map((d) => d.month),
                     scaleType: "band",
                   },
                 ]}
                 series={[
                   {
-                    data: monthlyData.map((d) => d.income),
+                    data: analyticsData.monthlyData.map((d) => d.income),
                     label: "Income",
                     color: "#10b981",
                   },
                   {
-                    data: monthlyData.map((d) => d.expenses),
+                    data: analyticsData.monthlyData.map((d) => d.expenses),
                     label: "Expenses",
                     color: "#ef4444",
                   },
@@ -132,7 +302,7 @@ export default function AnalyticsPage() {
               <PieChart
                 series={[
                   {
-                    data: categoryData,
+                    data: analyticsData.categoryData,
                     highlightScope: { faded: "global", highlighted: "item" },
                     faded: { innerRadius: 30, additionalRadius: -30 },
                   },
@@ -173,13 +343,13 @@ export default function AnalyticsPage() {
               <LineChart
                 xAxis={[
                   {
-                    data: savingsData.map((d) => d.month),
+                    data: analyticsData.savingsData.map((d) => d.month),
                     scaleType: "band",
                   },
                 ]}
                 series={[
                   {
-                    data: savingsData.map((d) => d.amount),
+                    data: analyticsData.savingsData.map((d) => d.amount),
                     label: "Savings",
                     color: "#3b82f6",
                     area: true,

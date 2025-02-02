@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../backend/firebaseConfig";
-import { Box, Typography, Grid, Paper } from "@mui/material";
+import { Box, Typography, Grid, Paper, useTheme, alpha } from "@mui/material";
 import MoneyTracker from "../components/MoneyTracker";
 import PurchaseHistoryPieChart from "../components/PurchaseHistoryPieChart";
 import ChatGPTComponent from "../components/ChatGptComponent";
@@ -17,15 +17,50 @@ import GridLayout, {
 import { LinearProgress } from "@mui/material";
 import { PieChart } from "@mui/x-charts";
 import { subscribeToTransactionStats } from "../backend/MoneyTracker/transactionStats";
+import BudgetManager from "../components/BudgetManager";
+import IncomeManager from "../components/IncomeManager";
+import {
+  getMonthlyIncome,
+  getMonthlyBudget,
+} from "../backend/MoneyTracker/budgetManager";
 
 function Page() {
+  const theme = useTheme();
   const [userUid, setUserUid] = useState(null);
+  const [income, setIncome] = useState(0);
+  const [budget, setBudget] = useState(0);
   const [stats, setStats] = useState([
     { title: "Total Expenses", value: "$0.00", change: "0%" },
     { title: "Monthly Expenses", value: "$0.00", change: "0%" },
     { title: "Average Per Purchase", value: "$0.00", change: "0%" },
     { title: "Total Purchases", value: "0", change: "0%" },
   ]);
+
+  // Define colors for different stat types
+  const statColors = {
+    totalExpenses: "#ef4444", // red
+    monthlyExpenses: "#f97316", // orange
+    averagePurchase: "#8b5cf6", // purple
+    totalPurchases: "#06b6d4", // cyan
+  };
+
+  // Load income and budget data
+  useEffect(() => {
+    async function loadFinancialData() {
+      if (!userUid) return;
+      try {
+        const [incomeAmount, budgetAmount] = await Promise.all([
+          getMonthlyIncome(userUid),
+          getMonthlyBudget(userUid),
+        ]);
+        setIncome(incomeAmount);
+        setBudget(budgetAmount);
+      } catch (err) {
+        console.error("Error loading financial data:", err);
+      }
+    }
+    loadFinancialData();
+  }, [userUid]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -49,6 +84,45 @@ function Page() {
     return () => unsubscribe();
   }, [userUid]);
 
+  // Helper function to get stat box styling
+  const getStatBoxStyle = (colorHex) => ({
+    p: 3,
+    bgcolor:
+      theme.palette.mode === "light"
+        ? alpha(colorHex, 0.1)
+        : alpha(colorHex, 0.2),
+    borderRadius: 2,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    boxShadow: 1,
+    transition: "background-color 0.3s ease",
+    "&:hover": {
+      bgcolor:
+        theme.palette.mode === "light"
+          ? alpha(colorHex, 0.15)
+          : alpha(colorHex, 0.25),
+    },
+  });
+
+  // Helper function to get stat color based on title
+  const getStatColor = (title) => {
+    switch (title) {
+      case "Total Expenses":
+        return statColors.totalExpenses;
+      case "Monthly Expenses":
+        return statColors.monthlyExpenses;
+      case "Average Per Purchase":
+        return statColors.averagePurchase;
+      case "Total Purchases":
+        return statColors.totalPurchases;
+      default:
+        return theme.palette.text.primary;
+    }
+  };
+
   return (
     <DashboardLayout>
       {/* Stats and Pie Chart Section */}
@@ -60,7 +134,7 @@ function Page() {
                 display: "flex",
                 flexDirection: { xs: "column", md: "row" },
                 height: "100%",
-                gap: 2,
+                gap: 1.5,
                 p: 2,
               }}
             >
@@ -77,7 +151,7 @@ function Page() {
               >
                 <Typography
                   variant="h6"
-                  sx={{ mb: 2, alignSelf: "flex-start" }}
+                  sx={{ mb: 1.5, alignSelf: "flex-start" }}
                 >
                   Expense Distribution
                 </Typography>
@@ -100,30 +174,97 @@ function Page() {
                   flex: 0.8,
                   display: "grid",
                   gridTemplateColumns: "repeat(2, 1fr)",
-                  gap: 2,
+                  gap: 1.5,
                   minWidth: { xs: "100%", md: "45%" },
+                  height: "100%",
                 }}
               >
+                {/* Monthly Income Box */}
+                <Box
+                  sx={{
+                    ...getStatBoxStyle("#10b981"),
+                    p: 2,
+                  }}
+                >
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    gutterBottom
+                    sx={{ mb: 1 }}
+                  >
+                    Monthly Income
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        wordBreak: "break-word",
+                        fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                        color: "#10b981",
+                        fontWeight: 600,
+                      }}
+                    >
+                      ${income.toLocaleString()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Monthly Budget Box */}
+                <Box
+                  sx={{
+                    ...getStatBoxStyle("#3b82f6"),
+                    p: 2,
+                  }}
+                >
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    gutterBottom
+                    sx={{ mb: 1 }}
+                  >
+                    Monthly Budget
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        wordBreak: "break-word",
+                        fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                        color: "#3b82f6",
+                        fontWeight: 600,
+                      }}
+                    >
+                      ${budget.toLocaleString()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Existing Stats */}
                 {stats.map((stat, index) => (
                   <Box
                     key={index}
                     sx={{
-                      p: 3,
-                      bgcolor: "background.paper",
-                      borderRadius: 2,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      textAlign: "center",
-                      boxShadow: 1,
+                      ...getStatBoxStyle(getStatColor(stat.title)),
+                      p: 2,
                     }}
                   >
                     <Typography
                       color="text.secondary"
                       variant="body2"
                       gutterBottom
-                      sx={{ mb: 2 }}
+                      sx={{ mb: 1 }}
                     >
                       {stat.title}
                     </Typography>
@@ -137,20 +278,23 @@ function Page() {
                       <Typography
                         variant="h5"
                         sx={{
-                          mb: 1,
                           wordBreak: "break-word",
-                          fontSize: { xs: "1.5rem", sm: "1.75rem" },
+                          fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                          fontWeight: 600,
+                          color: getStatColor(stat.title),
                         }}
                       >
                         {stat.value}
                       </Typography>
                       <Typography
                         variant="body2"
-                        color={
-                          stat.change.startsWith("+")
-                            ? "success.main"
-                            : "error.main"
-                        }
+                        sx={{
+                          color: stat.change.startsWith("+")
+                            ? statColors.totalExpenses
+                            : theme.palette.success.main,
+                          fontWeight: 500,
+                          fontSize: "0.875rem",
+                        }}
                       >
                         {stat.change} from last month
                       </Typography>
@@ -158,6 +302,27 @@ function Page() {
                   </Box>
                 ))}
               </Box>
+            </Box>
+          </Card>
+        </FullWidthGrid>
+      </GridLayout>
+
+      {/* Income and Budget Section */}
+      <GridLayout>
+        <FullWidthGrid>
+          <Card
+            title="Income & Budget Management"
+            subtitle="Manage your monthly income and spending budget"
+          >
+            <Box sx={{ p: 2 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <IncomeManager userUid={userUid} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <BudgetManager userUid={userUid} />
+                </Grid>
+              </Grid>
             </Box>
           </Card>
         </FullWidthGrid>
