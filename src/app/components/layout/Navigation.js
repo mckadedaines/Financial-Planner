@@ -25,9 +25,13 @@ import {
   Timeline,
   Settings,
   Person,
+  DarkMode,
+  LightMode,
 } from "@mui/icons-material";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signOutUser } from "@/app/backend/loginBackend/user";
+import { useThemeContext } from "@/app/theme/ThemeProvider";
 
 const pages = [
   { name: "Dashboard", href: "/dashboard", icon: <Dashboard /> },
@@ -35,13 +39,19 @@ const pages = [
   { name: "Analytics", href: "/analytics", icon: <Timeline /> },
 ];
 
-const settings = ["Profile", "Account", "Settings", "Logout"];
+const settings = [
+  { name: "Profile", href: "/profile", icon: <Person /> },
+  { name: "Account", href: "/account", icon: <AccountBalance /> },
+  { name: "Settings", href: "/settings", icon: <Settings /> },
+];
 
 export default function Navigation() {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const pathname = usePathname();
+  const router = useRouter();
+  const { mode, toggleTheme } = useThemeContext();
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -49,6 +59,20 @@ export default function Navigation() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleMenuItemClick = async (setting) => {
+    handleCloseUserMenu();
+    if (setting.name === "Logout") {
+      try {
+        await signOutUser();
+        router.push("/");
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    } else {
+      router.push(setting.href);
+    }
   };
 
   return (
@@ -103,20 +127,24 @@ export default function Navigation() {
                   sx={{
                     my: 2,
                     mx: 1,
-                    color: pathname === page.href ? "white" : "text.primary",
+                    color:
+                      pathname === page.href
+                        ? "primary.contrastText"
+                        : "text.primary",
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
                     borderRadius: "20px",
                     padding: "8px 16px",
                     backgroundColor:
-                      pathname === page.href ? "text.primary" : "transparent",
+                      pathname === page.href ? "primary.main" : "transparent",
                     transition: "all 0.3s ease-in-out",
                     "&:hover": {
                       backgroundColor:
                         pathname === page.href
-                          ? "text.primary"
-                          : "rgba(16, 185, 129, 0.1)",
+                          ? "primary.dark"
+                          : "primary.main",
+                      opacity: pathname === page.href ? 1 : 0.1,
                       transform: "scale(1.05)",
                     },
                   }}
@@ -127,7 +155,39 @@ export default function Navigation() {
               ))}
             </Box>
 
-            <Box sx={{ flexGrow: 0 }}>
+            <Box
+              sx={{
+                flexGrow: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <Tooltip
+                title={
+                  mode === "dark"
+                    ? "Switch to Light Mode"
+                    : "Switch to Dark Mode"
+                }
+              >
+                <IconButton
+                  onClick={toggleTheme}
+                  sx={{
+                    transition: "all 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                      color: "primary.main",
+                    },
+                  }}
+                >
+                  {mode === "dark" ? (
+                    <LightMode sx={{ color: "text.primary" }} />
+                  ) : (
+                    <DarkMode sx={{ color: "text.primary" }} />
+                  )}
+                </IconButton>
+              </Tooltip>
+
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar sx={{ bgcolor: "secondary.main" }}>
@@ -152,10 +212,24 @@ export default function Navigation() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                  <MenuItem
+                    key={setting.name}
+                    onClick={() => handleMenuItemClick(setting)}
+                  >
+                    <ListItemIcon>{setting.icon}</ListItemIcon>
+                    <Typography textAlign="center">{setting.name}</Typography>
                   </MenuItem>
                 ))}
+                <MenuItem
+                  onClick={() =>
+                    handleMenuItemClick({ name: "Logout", href: "/" })
+                  }
+                >
+                  <ListItemIcon>
+                    <Settings />
+                  </ListItemIcon>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
               </Menu>
             </Box>
           </Toolbar>

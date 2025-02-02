@@ -47,9 +47,20 @@ export default function AnalyticsPage() {
   return (
     <DashboardLayout>
       <Box sx={{ mb: 6 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3 }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          sx={{
+            textAlign: "center",
+            mb: 3,
+            fontWeight: "bold",
+            color: "#10b981",
+          }}
+        >
           Financial Analytics
         </Typography>
+
         <Tabs
           value={timeRange}
           onChange={handleTimeRangeChange}
