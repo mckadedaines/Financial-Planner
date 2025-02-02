@@ -1,3 +1,8 @@
+/**
+ * New user registration component
+ * Handles user registration with email and password
+ * Provides form validation and error handling
+ */
 "use client";
 import { TextField, Box, Typography, Button } from "@mui/material";
 import React, { useState } from "react";
@@ -16,7 +21,6 @@ function NewUser() {
     event.preventDefault();
     try {
       await registerUser(email, password);
-      console.log("User Registered!");
       setEmail("");
       setPassword("");
       router.push("/");

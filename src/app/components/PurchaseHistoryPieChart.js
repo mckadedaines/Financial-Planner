@@ -2,120 +2,175 @@
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../backend/firebaseConfig";
-import { Box, Typography, Grid, Paper } from "@mui/material";
+import { Box, Typography, Grid, Paper, CircularProgress } from "@mui/material";
 import { PieChart } from "@mui/x-charts";
 
-// Assigning specific colors to each category
+// Assigning specific colors to each category with updated theme colors
 const COLORS = {
-  Food: "#34D399", // Emerald
-  Clothing: "#60A5FA", // Sky
-  Electronics: "#FBBF24", // Amber
-  Housing: "#EF4444", // Red
-  Transportation: "#A78BFA", // Violet
-  Entertainment: "#10B981", // Green
-  Savings: "#EC4899", // Pink
-  Other: "#6B7280", // Slate
+  Food: "#10b981", // Primary mint green
+  Clothing: "#60a5fa", // Light blue
+  "Fuel/Gas": "#fbbf24", // Warm yellow
+  Housing: "#f87171", // Soft red
+  Transportation: "#a78bfa", // Soft purple
+  Entertainment: "#34d399", // Light green
+  Savings: "#f472b6", // Soft pink
+  Other: "#9ca3af", // Cool gray
 };
 
 const PurchaseHistoryPieChart = ({ userUid }) => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(!userUid);
 
   useEffect(() => {
+    let isSubscribed = true;
+    let unsubscribe = () => {};
+
     if (!userUid) {
-      console.warn("No user UID provided");
-      return;
+      return () => {};
     }
 
-    const purchasesRef = collection(db, "moneyTracker", userUid, "purchases");
+    try {
+      const purchasesRef = collection(db, "moneyTracker", userUid, "purchases");
+      unsubscribe = onSnapshot(
+        purchasesRef,
+        (querySnapshot) => {
+          if (!isSubscribed) return;
 
-    const unsubscribe = onSnapshot(
-      purchasesRef,
-      (querySnapshot) => {
-        const purchases = querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          timestamp: doc.data().timestamp.toDate().toLocaleString(),
-        }));
+          const purchases = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            timestamp: doc.data().timestamp.toDate().toLocaleString(),
+          }));
 
-        const groupedPurchases = purchases.reduce((acc, purchase) => {
-          const { category, moneySpent } = purchase;
-          const cost = parseFloat(moneySpent);
-          if (!isNaN(cost)) {
-            acc[category] = acc[category] ? acc[category] + cost : cost;
-          }
-          return acc;
-        }, {});
+          const groupedPurchases = purchases.reduce((acc, purchase) => {
+            const { category, moneySpent } = purchase;
+            const cost = parseFloat(moneySpent);
+            if (!isNaN(cost)) {
+              acc[category] = acc[category] ? acc[category] + cost : cost;
+            }
+            return acc;
+          }, {});
 
-        const chartData = Object.keys(groupedPurchases).map((category) => ({
-          id: category,
-          value: groupedPurchases[category],
-          Label: category,
-          color: COLORS[category] || COLORS.Other, // Using custom color if available, fallback to 'Other'
-        }));
+          const chartData = Object.keys(groupedPurchases).map((category) => ({
+            id: category,
+            value: groupedPurchases[category],
+            Label: category,
+            color: COLORS[category] || COLORS.Other,
+          }));
 
-        setData(chartData);
-      },
-      (error) => {
-        console.error("Error fetching or processing data:", error);
-      }
-    );
+          setData(chartData);
+          setLoading(false);
+        },
+        (error) => {
+          if (!isSubscribed) return;
+          console.error("Error fetching or processing data:", error);
+          setLoading(false);
+        }
+      );
+    } catch (error) {
+      console.error("Error setting up listener:", error);
+      setLoading(false);
+    }
 
-    // Cleanup listener on unmount
-    return () => unsubscribe();
+    return () => {
+      isSubscribed = false;
+      unsubscribe();
+    };
   }, [userUid]);
 
   return (
-    <Box className="flex flex-col items-center h-full mx-8 my-4">
-      {data.length === 0 ? (
-        <Typography variant="h6" className="text-slate-100">
+    <Box
+      sx={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {loading ? (
+        <CircularProgress sx={{ color: "#10b981" }} />
+      ) : data.length === 0 ? (
+        <Typography sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
           No data available
         </Typography>
       ) : (
-        <>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
+            width: "500px",
+            height: "450px",
+          }}
+        >
           <PieChart
             series={[
               {
                 data,
-                innerRadius: "80%",
-                outerRadius: "100%",
+                innerRadius: 100,
+                outerRadius: 150,
                 cornerRadius: 5,
                 startAngle: -90,
                 endAngle: 270,
-                arcLabel: () => null, // Explicitly returning null for no labels
+                paddingAngle: 2,
+                arcLabel: (item) =>
+                  item.highlighted ? `$${item.value.toFixed(0)}` : "",
+                arcLabelMinAngle: 45,
+                highlightScope: { faded: "global", highlighted: "item" },
+                faded: {
+                  innerRadius: 98,
+                  additionalRadius: -30,
+                  color: "gray",
+                },
+                valueFormatter: (item) =>
+                  `${item.Label}: $${item.value.toFixed(2)}`,
               },
             ]}
             sx={{
               "& .MuiPieArc-root": {
                 transition: "transform 0.3s ease-out",
                 "&:hover": {
-                  transform: "scale(1.1)",
+                  transform: "scale(1.03)",
+                },
+              },
+              "& .MuiChartsLegend-label": {
+                fill: "#10b981",
+              },
+              "& .MuiChartsLegend-mark": {
+                rx: 10,
+                ry: 10,
+              },
+              "& .MuiPieArcLabel-root": {
+                fill: "white !important",
+                fontSize: "1.2rem !important",
+                fontWeight: "bold !important",
+              },
+            }}
+            width={500}
+            height={450}
+            margin={{
+              right: 160,
+              left: 20,
+              top: 40,
+              bottom: 40,
+            }}
+            slotProps={{
+              legend: {
+                direction: "column",
+                position: { vertical: "middle", horizontal: "right" },
+                padding: 8,
+                itemMarkWidth: 16,
+                itemMarkHeight: 16,
+                markGap: 5,
+                itemGap: 8,
+                labelStyle: {
+                  fontSize: 12,
                 },
               },
             }}
-            width={400}
-            height={300}
-            tooltip={false} // Ensures tooltips are disabled
           />
-          <Grid container spacing={2} className="mt-4">
-            {data.map((entry, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <Paper
-                  elevation={3}
-                  style={{ padding: 10, textAlign: "center" }}
-                >
-                  <Typography
-                    variant="subtitle1"
-                    style={{ color: entry.color }}
-                  >
-                    {entry.Label}
-                  </Typography>
-                  <Typography variant="h6">
-                    ${entry.value.toFixed(2)}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </>
+        </Box>
       )}
     </Box>
   );

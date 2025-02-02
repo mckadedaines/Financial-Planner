@@ -1,3 +1,7 @@
+/**
+ * Main login page component that handles user authentication
+ * Provides a form for email/password login and navigation to registration
+ */
 "use client";
 import { TextField, Box, Typography, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -31,7 +35,6 @@ function Page() {
     try {
       const userCredential = await signInUser(email, password);
       const idToken = await userCredential.user.getIdToken();
-      console.log("User signed in with token:", idToken);
       router.push("/Dashboard");
     } catch (error) {
       setError("Invalid email or password");
@@ -114,7 +117,7 @@ function Page() {
               variant="outlined"
               color="success"
               onClick={() => {
-                router.push("/NewUser");
+                router.push("/register");
               }}
             >
               Need an account?

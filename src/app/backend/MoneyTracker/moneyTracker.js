@@ -2,27 +2,29 @@ import { Category } from "@mui/icons-material";
 import { auth, db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 
-// Money Tracker
-async function addMoneyTracker(bought, moneySpent, rating, category) {
-  try {
-    const user = auth.currentUser;
-    if (!user) {
-      throw new Error("User not logged in");
-    }
-
-    // Create a new document in the "moneyTracker" collection within a user-specific subcollection
-    await addDoc(collection(db, "moneyTracker", user.uid, "purchases"), {
-      bought,
-      moneySpent,
-      rating,
-      category,
-      timestamp: new Date(), // Optionally add a timestamp
-    });
-    console.log("Money tracker entry created");
-  } catch (error) {
-    console.error("Money tracker entry creation failed:", error);
-    throw error; // Re-throw to ensure calling function can handle it
+/**
+ * Add a new money tracker entry to the user's purchase history
+ * @param {string} bought - Description of the item purchased
+ * @param {number} moneySpent - Amount spent on the purchase
+ * @param {number} rating - User's rating of the purchase
+ * @param {string} category - Category of the purchase
+ * @param {string} userUid - User's unique identifier
+ * @returns {Promise<void>}
+ * @throws {Error} If no user UID is provided or if the operation fails
+ */
+async function addMoneyTracker(bought, moneySpent, rating, category, userUid) {
+  if (!userUid) {
+    throw new Error("No user UID provided");
   }
+
+  // Create a new document in the "moneyTracker" collection within a user-specific subcollection
+  await addDoc(collection(db, "moneyTracker", userUid, "purchases"), {
+    bought,
+    moneySpent,
+    rating,
+    category,
+    timestamp: new Date(),
+  });
 }
 
 export default addMoneyTracker;

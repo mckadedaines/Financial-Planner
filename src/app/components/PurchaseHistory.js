@@ -1,48 +1,68 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { db } from "../backend/firebaseConfig";
 import { collection, onSnapshot } from "firebase/firestore";
 
 function PurchaseHistory({ userUid }) {
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(!userUid);
 
   useEffect(() => {
+    let isSubscribed = true;
+    let unsubscribe = () => {};
+
     if (!userUid) {
-      console.warn("No user UID provided");
-      return;
+      return () => {};
     }
 
-    const purchasesRef = collection(db, "moneyTracker", userUid, "purchases");
+    try {
+      const purchasesRef = collection(db, "moneyTracker", userUid, "purchases");
+      unsubscribe = onSnapshot(
+        purchasesRef,
+        (querySnapshot) => {
+          if (!isSubscribed) return;
 
-    const unsubscribe = onSnapshot(
-      purchasesRef,
-      (querySnapshot) => {
-        const purchases = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          timestamp: doc.data().timestamp.toDate().toLocaleString(),
-        }));
-        setRows(purchases);
-      },
-      (error) => {
-        console.error("Error fetching or processing data:", error);
-      }
-    );
+          const purchases = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              timestamp: data.timestamp.toDate().toLocaleString(),
+            };
+          });
+          setRows(purchases);
+          setLoading(false);
+        },
+        (error) => {
+          if (!isSubscribed) return;
+          console.error("Error fetching or processing data:", error);
+          setLoading(false);
+        }
+      );
+    } catch (error) {
+      console.error("Error setting up listener:", error);
+      setLoading(false);
+    }
 
-    // Cleanup listener on unmount
-    return () => unsubscribe();
+    return () => {
+      isSubscribed = false;
+      unsubscribe();
+    };
   }, [userUid]);
 
   const columns = [
-    { field: "bought", headerName: "Item Purchased", flex: 1, minWidth: 150 }, // Using flex and minWidth for responsiveness
+    { field: "bought", headerName: "Item Purchased", flex: 1, minWidth: 150 },
     {
       field: "moneySpent",
       headerName: "Money Spent",
       type: "number",
       flex: 1,
       minWidth: 120,
+      renderCell: (params) => {
+        return `$${Number(params.row.moneySpent).toFixed(2)}`;
+      },
     },
     { field: "category", headerName: "Category", flex: 1, minWidth: 130 },
     {
@@ -56,46 +76,82 @@ function PurchaseHistory({ userUid }) {
   ];
 
   return (
-    <Box className="mt-8">
-      <Box className="text-center mb-6">
-        <Typography
-          variant="h3"
-          component="h2"
-          className="text-3xl font-bold text-slate-100"
-        >
-          Purchase History
-        </Typography>
-      </Box>
-      <Box className="bg-gray-800 text-white rounded-lg shadow-lg p-6">
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          checkboxSelection
-          density="standard"
-          className="bg-gray-700 text-white"
-          components={{
-            NoRowsOverlay: () => (
-              <Typography variant="body1" className="text-white">
-                No purchase history found.
-              </Typography>
-            ),
-          }}
+    <Box>
+      {loading ? (
+        <Box
           sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              color: "black",
-            },
-            "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
-              {
-                color: "white", // Change Rows per page section text and pagination display text color to white
-              },
-            "& .MuiTablePagination-select, & .MuiInputBase-input": {
-              color: "white", // Change select input text color
-            },
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "200px",
           }}
-        />
-      </Box>
+        >
+          <CircularProgress sx={{ color: "#10b981" }} />
+        </Box>
+      ) : (
+        <Box sx={{ width: "100%", height: 400 }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            checkboxSelection
+            density="comfortable"
+            sx={{
+              border: "none",
+              "& .MuiDataGrid-cell": {
+                color: "text.primary",
+                borderColor: "divider",
+              },
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "transparent",
+                color: "#10b981",
+                borderColor: "divider",
+                "& .MuiDataGrid-columnHeaderTitle": {
+                  fontWeight: "bold",
+                },
+              },
+              "& .MuiDataGrid-row": {
+                "&:hover": {
+                  backgroundColor: "action.hover",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "#10b98120",
+                  "&:hover": {
+                    backgroundColor: "#10b98130",
+                  },
+                },
+              },
+              "& .MuiCheckbox-root": {
+                color: "#10b981",
+                "&.Mui-checked": {
+                  color: "#10b981",
+                },
+              },
+              "& .MuiDataGrid-footerContainer": {
+                borderTop: "1px solid",
+                borderColor: "divider",
+              },
+            }}
+            components={{
+              NoRowsOverlay: () => (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Typography sx={{ color: "text.secondary" }}>
+                    No purchase history found.
+                  </Typography>
+                </Box>
+              ),
+            }}
+          />
+        </Box>
+      )}
     </Box>
   );
 }
