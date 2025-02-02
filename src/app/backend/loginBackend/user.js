@@ -59,7 +59,7 @@ export const signInUser = async (email, password) => {
       { merge: true }
     );
 
-    return user;
+    return userCredential;
   } catch (error) {
     console.error("Sign in failed:", error);
     throw error;

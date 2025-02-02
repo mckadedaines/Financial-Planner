@@ -46,14 +46,14 @@ export default function AnalyticsPage() {
 
   return (
     <DashboardLayout>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+      <Box sx={{ mb: 6 }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3 }}>
           Financial Analytics
         </Typography>
         <Tabs
           value={timeRange}
           onChange={handleTimeRangeChange}
-          sx={{ borderBottom: 1, borderColor: "divider" }}
+          sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
         >
           <Tab label="Last 6 Months" />
           <Tab label="Year to Date" />
@@ -61,14 +61,22 @@ export default function AnalyticsPage() {
         </Tabs>
       </Box>
 
-      <GridLayout>
+      <GridLayout spacing={4}>
         {/* Income vs Expenses Chart */}
         <FullWidthGrid>
           <Card
             title="Income vs Expenses"
             subtitle="Monthly comparison of income and expenses"
+            sx={{ p: 2 }}
           >
-            <Box sx={{ height: 400, width: "100%" }}>
+            <Box
+              sx={{
+                height: 400,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <BarChart
                 xAxis={[
                   {
@@ -88,6 +96,7 @@ export default function AnalyticsPage() {
                     color: "#ef4444",
                   },
                 ]}
+                width={800}
                 height={350}
               />
             </Box>
@@ -95,12 +104,20 @@ export default function AnalyticsPage() {
         </FullWidthGrid>
 
         {/* Expense Categories */}
-        <HalfWidthGrid>
+        <FullWidthGrid>
           <Card
             title="Expense Categories"
             subtitle="Distribution of expenses by category"
+            sx={{ p: 2 }}
           >
-            <Box sx={{ height: 400, width: "100%" }}>
+            <Box
+              sx={{
+                height: 400,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <PieChart
                 series={[
                   {
@@ -109,16 +126,39 @@ export default function AnalyticsPage() {
                     faded: { innerRadius: 30, additionalRadius: -30 },
                   },
                 ]}
+                width={800}
                 height={350}
+                slotProps={{
+                  legend: {
+                    direction: "column",
+                    position: { vertical: "middle", horizontal: "right" },
+                    padding: 8,
+                    itemMarkWidth: 16,
+                    itemMarkHeight: 16,
+                    markGap: 5,
+                    itemGap: 8,
+                  },
+                }}
               />
             </Box>
           </Card>
-        </HalfWidthGrid>
+        </FullWidthGrid>
 
         {/* Savings Trend */}
-        <HalfWidthGrid>
-          <Card title="Savings Trend" subtitle="Monthly savings analysis">
-            <Box sx={{ height: 400, width: "100%" }}>
+        <FullWidthGrid>
+          <Card
+            title="Savings Trend"
+            subtitle="Monthly savings analysis"
+            sx={{ p: 2 }}
+          >
+            <Box
+              sx={{
+                height: 400,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <LineChart
                 xAxis={[
                   {
@@ -134,23 +174,30 @@ export default function AnalyticsPage() {
                     area: true,
                   },
                 ]}
+                width={800}
                 height={350}
               />
             </Box>
           </Card>
-        </HalfWidthGrid>
+        </FullWidthGrid>
 
         {/* Financial Insights */}
         <FullWidthGrid>
           <Card
             title="Financial Insights"
             subtitle="Key metrics and recommendations"
+            sx={{ p: 2 }}
           >
-            <Box sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom color="primary">
+            <Box sx={{ p: 3 }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                color="primary"
+                sx={{ mb: 2 }}
+              >
                 Monthly Overview
               </Typography>
-              <Typography paragraph>
+              <Typography paragraph sx={{ mb: 3 }}>
                 Your average monthly savings rate is 25%, which is excellent!
                 You're consistently saving more than the recommended 20% of your
                 income.
@@ -160,11 +207,11 @@ export default function AnalyticsPage() {
                 variant="h6"
                 gutterBottom
                 color="primary"
-                sx={{ mt: 3 }}
+                sx={{ mb: 2 }}
               >
                 Spending Patterns
               </Typography>
-              <Typography paragraph>
+              <Typography paragraph sx={{ mb: 3 }}>
                 Housing costs represent 35% of your expenses, which is within
                 the recommended range of 25-35%. Consider reviewing your food
                 expenses (25%) as they're slightly above the recommended 15-20%.
@@ -174,7 +221,7 @@ export default function AnalyticsPage() {
                 variant="h6"
                 gutterBottom
                 color="primary"
-                sx={{ mt: 3 }}
+                sx={{ mb: 2 }}
               >
                 Recommendations
               </Typography>

@@ -1,15 +1,17 @@
 import React, { useRef, useEffect } from "react";
+import { useTheme } from "@mui/material/styles";
 
 const CanvasBackground = () => {
   const canvasRef = useRef(null);
   const animationFrameId = useRef(null);
+  const theme = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let particlesArray = [];
     const numberOfParticles = 35;
-    const backgroundColor = "#374151"; // Tailwind CSS bg-gray-700 color
+    const orbColor = theme.palette.text.primary;
 
     // Set the canvas size to the window size
     canvas.width = window.innerWidth;
@@ -30,9 +32,11 @@ const CanvasBackground = () => {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
         ctx.fillStyle = this.color;
+        ctx.globalAlpha = 0.6; // Add some transparency
         ctx.filter = "blur(2px)"; // Add blur effect
         ctx.fill();
         ctx.filter = "none"; // Reset filter
+        ctx.globalAlpha = 1; // Reset transparency
       }
 
       update() {
@@ -54,16 +58,14 @@ const CanvasBackground = () => {
       for (let i = 0; i < numberOfParticles; i++) {
         let x = Math.random() * canvas.width;
         let y = Math.random() * canvas.height;
-        let size = Math.random() * 10 + 5; // Increase initial size
-        let color = "#FFFFFF"; // White color
+        let size = Math.random() * 10 + 5;
+        let color = orbColor;
         particlesArray.push(new Particle(x, y, size, color));
       }
     }
 
     function animate() {
-      // Set the background color of the canvas
-      ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas instead of filling with background color
 
       for (let i = 0; i < particlesArray.length; i++) {
         particlesArray[i].update();
@@ -99,8 +101,8 @@ const CanvasBackground = () => {
         left: 0,
         width: "100%",
         height: "100%",
-        zIndex: -1,
-        backgroundColor: "#374151", // Set the same background color as bg-gray-700
+        zIndex: 0,
+        pointerEvents: "none",
       }}
     />
   );

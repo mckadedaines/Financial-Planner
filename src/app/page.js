@@ -11,6 +11,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import KeyIcon from "@mui/icons-material/Key";
 import CanvasBackground from "./components/CanvasBackground";
+import Card from "./components/common/Card";
 
 function Page() {
   const [email, setEmail] = useState("");
@@ -34,8 +35,12 @@ function Page() {
 
     try {
       const userCredential = await signInUser(email, password);
-      const idToken = await userCredential.user.getIdToken();
-      router.push("/Dashboard");
+      if (userCredential && userCredential.user) {
+        const idToken = await userCredential.user.getIdToken();
+        router.push("/dashboard");
+      } else {
+        throw new Error("Failed to get user credentials");
+      }
     } catch (error) {
       setError("Invalid email or password");
       setEmailError(true);
@@ -46,30 +51,66 @@ function Page() {
 
   return (
     <Box
-      component="section"
-      className="flex h-screen justify-center items-center"
+      component="main"
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: "relative",
+        p: { xs: 2, sm: 4 },
+        backgroundColor: "background.default",
+        "& > *": {
+          position: "relative",
+          zIndex: 1,
+        },
+      }}
     >
       <CanvasBackground />
-      <Box
-        component="section"
-        className="flex flex-col items-center space-y-4 rounded-xl pl-10 pr-10 bg-slate-200"
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: "450px",
+          position: "relative",
+          zIndex: 2,
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+        }}
       >
-        <Box component="section" className="m-24">
-          <Typography variant="h2" className="text-center font-bold" mb={4}>
-            User Login
+        <Box
+          component="section"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+            p: { xs: 3, sm: 4 },
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              textAlign: "center",
+              fontWeight: 600,
+              color: "text.primary",
+              mb: 2,
+            }}
+          >
+            Welcome Back
           </Typography>
-          <Box component="section" className="flex flex-col gap-6">
+          <Box
+            component="form"
+            sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+          >
             <TextField
               error={emailError}
               required
-              color="success"
-              label="Username"
-              id="outlined-basic"
+              fullWidth
+              label="Email"
+              variant="outlined"
               helperText={emailError ? "Please enter a valid email" : ""}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <AccountCircle />
+                    <AccountCircle color="action" />
                   </InputAdornment>
                 ),
               }}
@@ -79,19 +120,29 @@ function Page() {
                 setEmailError(false);
               }}
               inputProps={{ "data-cy": "email" }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "text.primary",
+                  },
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "text.primary",
+                },
+              }}
             />
             <TextField
               error={passwordError}
               required
-              color="success"
+              fullWidth
               label="Password"
               type="password"
-              id="outlined-basic"
+              variant="outlined"
               helperText={passwordError ? "Please enter a valid password" : ""}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <KeyIcon />
+                    <KeyIcon color="action" />
                   </InputAdornment>
                 ),
               }}
@@ -101,30 +152,79 @@ function Page() {
                 setPasswordError(false);
               }}
               inputProps={{ "data-cy": "password" }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "text.primary",
+                  },
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "text.primary",
+                },
+              }}
             />
             <Button
               variant="contained"
-              color="success"
-              type="submit"
+              color="inherit"
+              size="large"
+              fullWidth
               onClick={handleLogin}
               data-cy="login"
+              sx={{
+                py: 1.5,
+                textTransform: "none",
+                fontSize: "1rem",
+                color: "white",
+                bgcolor: "text.primary",
+                backdropFilter: "blur(10px)",
+                transition: "all 0.3s ease-in-out",
+                boxShadow: "none",
+                "&:hover": {
+                  bgcolor: "text.primary",
+                  opacity: 0.9,
+                  boxShadow: (theme) =>
+                    `0 0 20px ${theme.palette.text.primary}`,
+                  backdropFilter: "blur(20px)",
+                  transform: "translateY(-2px)",
+                },
+              }}
             >
-              Login
+              Sign In
             </Button>
-            {error && <Typography color="error">{error}</Typography>}
+            {error && (
+              <Typography color="error" textAlign="center" fontSize="0.875rem">
+                {error}
+              </Typography>
+            )}
             <Button
               data-cy="register"
               variant="outlined"
-              color="success"
-              onClick={() => {
-                router.push("/register");
+              color="inherit"
+              size="large"
+              onClick={() => router.push("/register")}
+              sx={{
+                py: 1.5,
+                textTransform: "none",
+                fontSize: "1rem",
+                color: "text.primary",
+                borderColor: "text.primary",
+                backdropFilter: "blur(10px)",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  borderColor: "text.primary",
+                  bgcolor: "rgba(255, 255, 255, 0.1)",
+                  boxShadow: (theme) =>
+                    `0 0 20px ${theme.palette.text.primary}`,
+                  backdropFilter: "blur(20px)",
+                  transform: "translateY(-2px)",
+                },
               }}
             >
-              Need an account?
+              Create an Account
             </Button>
           </Box>
         </Box>
-      </Box>
+      </Card>
     </Box>
   );
 }
