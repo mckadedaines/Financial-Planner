@@ -2,22 +2,13 @@
 
 import DashboardLayout from "../components/layout/DashboardLayout";
 import Card from "../components/common/Card";
-import GridLayout, {
-  HalfWidthGrid,
-  FullWidthGrid,
-} from "../components/common/GridLayout";
+import GridLayout, { FullWidthGrid } from "../components/common/GridLayout";
 import { Typography, Box, Tab, Tabs } from "@mui/material";
 import { useState, useEffect } from "react";
 import { BarChart, LineChart, PieChart } from "@mui/x-charts";
 import { onAuthStateChanged } from "firebase/auth";
-import {
-  collection,
-  onSnapshot,
-  query,
-  where,
-  orderBy,
-} from "firebase/firestore";
-import { auth, db } from "../backend/firebaseConfig";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/firebaseConfig";
 import { CircularProgress } from "@mui/material";
 import { getMonthlyIncome } from "../backend/MoneyTracker/budgetManager";
 

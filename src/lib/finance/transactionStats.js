@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase/firebaseConfig";
+import { db } from "../firebaseConfig";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
 export const subscribeToTransactionStats = (userUid, onUpdate) => {

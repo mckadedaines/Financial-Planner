@@ -1,21 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../backend/firebaseConfig";
-import { Box, Typography, Grid, Paper, useTheme, alpha } from "@mui/material";
+import { auth } from "@/lib/firebase/firebaseConfig";
+import { Box, Typography, Grid, useTheme, alpha } from "@mui/material";
 import MoneyTracker from "../components/MoneyTracker";
 import PurchaseHistoryPieChart from "../components/PurchaseHistoryPieChart";
-import ChatGPTComponent from "../components/ChatGptComponent";
-import CanvasBackground from "../components/CanvasBackground"; // Import CanvasBackground
 import DashboardLayout from "../components/layout/DashboardLayout";
 import Card from "../components/common/Card";
-import GridLayout, {
-  QuarterWidthGrid,
-  HalfWidthGrid,
-  FullWidthGrid,
-} from "../components/common/GridLayout";
-import { LinearProgress } from "@mui/material";
-import { PieChart } from "@mui/x-charts";
+import GridLayout, { FullWidthGrid } from "../components/common/GridLayout";
 import { subscribeToTransactionStats } from "../backend/MoneyTracker/transactionStats";
 import BudgetManager from "../components/BudgetManager";
 import IncomeManager from "../components/IncomeManager";

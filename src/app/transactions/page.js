@@ -6,7 +6,7 @@ import Card from "../components/common/Card";
 import PurchaseHistory from "../components/PurchaseHistory";
 import { Typography } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../backend/firebaseConfig";
+import { auth } from "@/lib/firebase/firebaseConfig";
 
 export default function TransactionsPage() {
   const [userUid, setUserUid] = useState(null);

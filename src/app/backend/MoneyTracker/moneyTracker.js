@@ -1,5 +1,4 @@
-import { Category } from "@mui/icons-material";
-import { auth, db } from "../firebaseConfig";
+import { db } from "@/lib/firebase/firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 
 /**

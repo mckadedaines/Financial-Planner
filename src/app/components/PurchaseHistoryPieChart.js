@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../backend/firebaseConfig";
+import { db } from "@/lib/firebase/firebaseConfig";
 import { Box, Typography, Grid, Paper, CircularProgress } from "@mui/material";
 import { PieChart } from "@mui/x-charts";
 

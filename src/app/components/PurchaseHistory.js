@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { db } from "../backend/firebaseConfig";
+import { db } from "@/lib/firebase/firebaseConfig";
 import { collection, onSnapshot } from "firebase/firestore";
 
 function PurchaseHistory({ userUid }) {

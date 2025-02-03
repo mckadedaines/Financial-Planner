@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { auth } from "@/app/backend/firebaseConfig";
+import { auth } from "@/lib/firebase/firebaseConfig";
 import { Box, Container, Typography, Paper, Avatar, Grid } from "@mui/material";
 import { Person } from "@mui/icons-material";
 import DashboardLayout from "@/app/components/layout/DashboardLayout";

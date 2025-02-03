@@ -12,10 +12,9 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
-import { auth } from "@/app/backend/firebaseConfig";
+import { auth } from "@/lib/firebase/firebaseConfig";
 import {
   updatePassword,
-  updateEmail,
   verifyBeforeUpdateEmail,
   sendEmailVerification,
 } from "firebase/auth";
