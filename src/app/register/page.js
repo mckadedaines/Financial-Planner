@@ -134,8 +134,8 @@ export default function RegisterPage() {
             Account Created Successfully
           </Typography>
           <Typography variant="body1" sx={{ mb: 3 }}>
-            We've sent a verification email to {formData.email}. Please check
-            your inbox and click the verification link.
+            We&apos;ve sent a verification email to {formData.email}. Please
+            check your inbox and click the verification link.
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Redirecting to verification page...

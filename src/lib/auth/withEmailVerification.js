@@ -259,7 +259,7 @@ export default function withEmailVerification(WrappedComponent) {
                     },
                   }}
                 >
-                  I've Verified My Email
+                  I&apos;ve Verified My Email
                 </Button>
               </Stack>
             </Box>
