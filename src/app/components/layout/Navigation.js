@@ -27,11 +27,13 @@ import {
   Person,
   DarkMode,
   LightMode,
+  Logout,
 } from "@mui/icons-material";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOutUser } from "@/app/backend/loginBackend/user";
 import { useThemeContext } from "@/app/theme/ThemeProvider";
+import { alpha } from "@mui/material/styles";
 
 const pages = [
   { name: "Dashboard", href: "/dashboard", icon: <Dashboard /> },
@@ -137,15 +139,35 @@ export default function Navigation() {
                     borderRadius: "20px",
                     padding: "8px 16px",
                     backgroundColor:
-                      pathname === page.href ? "primary.main" : "transparent",
+                      pathname === page.href
+                        ? alpha("#10b981", 0.9)
+                        : "transparent",
+                    backdropFilter: "blur(8px)",
+                    border: `1px solid ${alpha(
+                      "#10b981",
+                      pathname === page.href ? 0.3 : 0
+                    )}`,
+                    boxShadow:
+                      pathname === page.href
+                        ? `0 4px 6px -1px ${alpha(
+                            "#10b981",
+                            0.1
+                          )}, 0 2px 4px -1px ${alpha("#10b981", 0.06)}`
+                        : "none",
                     transition: "all 0.3s ease-in-out",
                     "&:hover": {
                       backgroundColor:
                         pathname === page.href
-                          ? "primary.dark"
-                          : "primary.main",
-                      opacity: pathname === page.href ? 1 : 0.1,
-                      transform: "scale(1.05)",
+                          ? alpha("#10b981", 0.95)
+                          : alpha("#10b981", 0.1),
+                      transform: "translateY(-2px)",
+                      boxShadow: `0 0 20px ${alpha("#10b981", 0.2)}, 
+                                 0 4px 6px -1px ${alpha("#10b981", 0.1)}, 
+                                 0 2px 4px -1px ${alpha("#10b981", 0.06)}`,
+                      border: `1px solid ${alpha(
+                        "#10b981",
+                        pathname === page.href ? 0.4 : 0.2
+                      )}`,
                     },
                   }}
                 >
@@ -226,7 +248,7 @@ export default function Navigation() {
                   }
                 >
                   <ListItemIcon>
-                    <Settings />
+                    <Logout />
                   </ListItemIcon>
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>

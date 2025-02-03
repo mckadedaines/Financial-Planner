@@ -90,7 +90,7 @@ const PurchaseHistoryPieChart = ({ userUid }) => {
       {loading ? (
         <CircularProgress sx={{ color: "#10b981" }} />
       ) : data.length === 0 ? (
-        <Typography sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
+        <Typography sx={{ color: "text.secondary" }}>
           No data available
         </Typography>
       ) : (

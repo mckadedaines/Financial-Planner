@@ -1,7 +1,7 @@
 "use client";
 
 import DashboardLayout from "../components/layout/DashboardLayout";
-import Card from "../components/common/Card";
+import AnimatedCard from "@/app/components/common/AnimatedCard";
 import GridLayout, { FullWidthGrid } from "../components/common/GridLayout";
 import { Typography, Box, Tab, Tabs } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -236,7 +236,7 @@ export default function AnalyticsPage() {
       <GridLayout spacing={4}>
         {/* Income vs Expenses Chart */}
         <FullWidthGrid>
-          <Card
+          <AnimatedCard
             title="Income vs Expenses"
             subtitle="Monthly comparison of income and expenses"
             sx={{ p: 2 }}
@@ -272,12 +272,12 @@ export default function AnalyticsPage() {
                 height={350}
               />
             </Box>
-          </Card>
+          </AnimatedCard>
         </FullWidthGrid>
 
         {/* Expense Categories */}
         <FullWidthGrid>
-          <Card
+          <AnimatedCard
             title="Expense Categories"
             subtitle="Distribution of expenses by category"
             sx={{ p: 2 }}
@@ -313,12 +313,12 @@ export default function AnalyticsPage() {
                 }}
               />
             </Box>
-          </Card>
+          </AnimatedCard>
         </FullWidthGrid>
 
         {/* Savings Trend */}
         <FullWidthGrid>
-          <Card
+          <AnimatedCard
             title="Savings Trend"
             subtitle="Monthly savings analysis"
             sx={{ p: 2 }}
@@ -350,7 +350,7 @@ export default function AnalyticsPage() {
                 height={350}
               />
             </Box>
-          </Card>
+          </AnimatedCard>
         </FullWidthGrid>
       </GridLayout>
     </DashboardLayout>

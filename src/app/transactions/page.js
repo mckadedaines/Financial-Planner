@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import Card from "../components/common/Card";
+import AnimatedCard from "@/app/components/common/AnimatedCard";
 import PurchaseHistory from "../components/PurchaseHistory";
 import { Typography } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
@@ -36,9 +36,9 @@ export default function TransactionsPage() {
       >
         Transaction History
       </Typography>
-      <Card>
+      <AnimatedCard>
         <PurchaseHistory userUid={userUid} />
-      </Card>
+      </AnimatedCard>
     </DashboardLayout>
   );
 }

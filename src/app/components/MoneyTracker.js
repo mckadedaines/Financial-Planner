@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import addMoneyTracker from "@/app/backend/MoneyTracker/moneyTracker";
+import { alpha } from "@mui/material/styles";
 
 /**
  * MoneyTracker component for tracking user expenses
@@ -292,9 +293,22 @@ function MoneyTracker({ userUid }) {
               px: 6,
               py: 1.5,
               fontSize: "1.1rem",
-              backgroundColor: "#10b981",
+              bgcolor: alpha("#10b981", 0.9),
+              backdropFilter: "blur(8px)",
+              border: `1px solid ${alpha("#10b981", 0.3)}`,
+              boxShadow: `0 4px 6px -1px ${alpha(
+                "#10b981",
+                0.1
+              )}, 0 2px 4px -1px ${alpha("#10b981", 0.06)}`,
+              transition: "all 0.3s ease",
+              textTransform: "none",
               "&:hover": {
-                backgroundColor: "#059669",
+                bgcolor: alpha("#10b981", 0.95),
+                transform: "translateY(-2px)",
+                boxShadow: `0 0 20px ${alpha("#10b981", 0.3)}, 
+                           0 4px 6px -1px ${alpha("#10b981", 0.2)}, 
+                           0 2px 4px -1px ${alpha("#10b981", 0.12)}`,
+                border: `1px solid ${alpha("#10b981", 0.4)}`,
               },
             }}
           >

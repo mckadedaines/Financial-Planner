@@ -6,7 +6,7 @@ import { Box, Typography, Grid, useTheme, alpha } from "@mui/material";
 import MoneyTracker from "../components/MoneyTracker";
 import PurchaseHistoryPieChart from "../components/PurchaseHistoryPieChart";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import Card from "../components/common/Card";
+import AnimatedCard from "@/app/components/common/AnimatedCard";
 import GridLayout, { FullWidthGrid } from "../components/common/GridLayout";
 import { subscribeToTransactionStats } from "../backend/MoneyTracker/transactionStats";
 import BudgetManager from "../components/BudgetManager";
@@ -15,6 +15,8 @@ import {
   getMonthlyIncome,
   getMonthlyBudget,
 } from "../backend/MoneyTracker/budgetManager";
+import withEmailVerification from "@/lib/auth/withEmailVerification";
+import AnimatedStatBox from "@/app/components/common/AnimatedStatBox";
 
 function Page() {
   const theme = useTheme();
@@ -89,13 +91,23 @@ function Page() {
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
-    boxShadow: 1,
-    transition: "background-color 0.3s ease",
+    boxShadow: `0 4px 6px -1px ${alpha(colorHex, 0.1)}, 0 2px 4px -1px ${alpha(
+      colorHex,
+      0.06
+    )}`,
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(8px)",
+    border: `1px solid ${alpha(colorHex, 0.1)}`,
     "&:hover": {
       bgcolor:
         theme.palette.mode === "light"
           ? alpha(colorHex, 0.15)
           : alpha(colorHex, 0.25),
+      transform: "translateY(-2px)",
+      boxShadow: `0 0 20px ${alpha(colorHex, 0.3)}, 
+                  0 4px 6px -1px ${alpha(colorHex, 0.2)}, 
+                  0 2px 4px -1px ${alpha(colorHex, 0.12)}`,
+      border: `1px solid ${alpha(colorHex, 0.2)}`,
     },
   });
 
@@ -120,7 +132,7 @@ function Page() {
       {/* Stats and Pie Chart Section */}
       <GridLayout>
         <FullWidthGrid>
-          <Card sx={{ height: "500px" }}>
+          <AnimatedCard sx={{ height: "500px" }}>
             <Box
               sx={{
                 display: "flex",
@@ -202,7 +214,7 @@ function Page() {
                         fontWeight: 600,
                       }}
                     >
-                      ${income.toLocaleString()}
+                      ${income?.toLocaleString() ?? "0"}
                     </Typography>
                   </Box>
                 </Box>
@@ -238,71 +250,33 @@ function Page() {
                         fontWeight: 600,
                       }}
                     >
-                      ${budget.toLocaleString()}
+                      ${budget?.toLocaleString() ?? "0"}
                     </Typography>
                   </Box>
                 </Box>
 
                 {/* Existing Stats */}
                 {stats.map((stat, index) => (
-                  <Box
+                  <AnimatedStatBox
                     key={index}
-                    sx={{
-                      ...getStatBoxStyle(getStatColor(stat.title)),
-                      p: 2,
-                    }}
-                  >
-                    <Typography
-                      color="text.secondary"
-                      variant="body2"
-                      gutterBottom
-                      sx={{ mb: 1 }}
-                    >
-                      {stat.title}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography
-                        variant="h5"
-                        sx={{
-                          wordBreak: "break-word",
-                          fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                          fontWeight: 600,
-                          color: getStatColor(stat.title),
-                        }}
-                      >
-                        {stat.value}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: stat.change.startsWith("+")
-                            ? statColors.totalExpenses
-                            : theme.palette.success.main,
-                          fontWeight: 500,
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {stat.change} from last month
-                      </Typography>
-                    </Box>
-                  </Box>
+                    index={index}
+                    style={getStatBoxStyle(getStatColor(stat.title))}
+                    title={stat.title}
+                    value={stat.value}
+                    change={stat.change}
+                    color={getStatColor(stat.title)}
+                  />
                 ))}
               </Box>
             </Box>
-          </Card>
+          </AnimatedCard>
         </FullWidthGrid>
       </GridLayout>
 
       {/* Income and Budget Section */}
       <GridLayout>
         <FullWidthGrid>
-          <Card
+          <AnimatedCard
             title="Income & Budget Management"
             subtitle="Manage your monthly income and spending budget"
           >
@@ -316,20 +290,23 @@ function Page() {
                 </Grid>
               </Grid>
             </Box>
-          </Card>
+          </AnimatedCard>
         </FullWidthGrid>
       </GridLayout>
 
       {/* Money Tracker */}
       <GridLayout>
         <FullWidthGrid>
-          <Card title="Money Tracker" subtitle="Track your daily expenses">
+          <AnimatedCard
+            title="Money Tracker"
+            subtitle="Track your daily expenses"
+          >
             <MoneyTracker userUid={userUid} />
-          </Card>
+          </AnimatedCard>
         </FullWidthGrid>
       </GridLayout>
     </DashboardLayout>
   );
 }
 
-export default Page;
+export default withEmailVerification(Page);

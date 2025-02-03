@@ -19,6 +19,7 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import DashboardLayout from "@/app/components/layout/DashboardLayout";
+import { alpha } from "@mui/material/styles";
 
 const buttonSx = {
   py: 1.5,
@@ -26,20 +27,28 @@ const buttonSx = {
   textTransform: "none",
   fontSize: "1rem",
   color: "white",
-  bgcolor: "text.primary",
-  backdropFilter: "blur(10px)",
+  bgcolor: alpha("#10b981", 0.9),
+  backdropFilter: "blur(8px)",
+  border: `1px solid ${alpha("#10b981", 0.3)}`,
+  boxShadow: `0 4px 6px -1px ${alpha("#10b981", 0.1)}, 0 2px 4px -1px ${alpha(
+    "#10b981",
+    0.06
+  )}`,
   transition: "all 0.3s ease-in-out",
-  boxShadow: "none",
   "&:hover": {
-    bgcolor: "text.primary",
-    opacity: 0.9,
-    boxShadow: (theme) => `0 0 20px ${theme.palette.text.primary}`,
-    backdropFilter: "blur(20px)",
+    bgcolor: alpha("#10b981", 0.95),
     transform: "translateY(-2px)",
+    boxShadow: `0 0 20px ${alpha("#10b981", 0.3)}, 
+                0 4px 6px -1px ${alpha("#10b981", 0.2)}, 
+                0 2px 4px -1px ${alpha("#10b981", 0.12)}`,
+    border: `1px solid ${alpha("#10b981", 0.4)}`,
   },
   "&:disabled": {
-    bgcolor: "action.disabledBackground",
-    color: "action.disabled",
+    bgcolor: alpha("#10b981", 0.5),
+    color: "white",
+    border: `1px solid ${alpha("#10b981", 0.2)}`,
+    transform: "none",
+    boxShadow: "none",
   },
 };
 
@@ -175,11 +184,14 @@ export default function AccountPage() {
                     mb: 2,
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
-                        borderColor: "text.primary",
+                        borderColor: "#10b981",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: alpha("#10b981", 0.5),
                       },
                     },
                     "& .MuiInputLabel-root.Mui-focused": {
-                      color: "text.primary",
+                      color: "#10b981",
                     },
                   }}
                 />
@@ -187,7 +199,10 @@ export default function AccountPage() {
                   variant="contained"
                   type="submit"
                   disabled={!newEmail || isLoading || verificationSent}
-                  sx={buttonSx}
+                  sx={{
+                    ...buttonSx,
+                    width: { xs: "100%", sm: "auto" },
+                  }}
                 >
                   {isLoading ? (
                     <CircularProgress size={24} color="inherit" />
@@ -216,11 +231,14 @@ export default function AccountPage() {
                     mb: 2,
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
-                        borderColor: "text.primary",
+                        borderColor: "#10b981",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: alpha("#10b981", 0.5),
                       },
                     },
                     "& .MuiInputLabel-root.Mui-focused": {
-                      color: "text.primary",
+                      color: "#10b981",
                     },
                   }}
                 />
@@ -235,11 +253,14 @@ export default function AccountPage() {
                     mb: 2,
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
-                        borderColor: "text.primary",
+                        borderColor: "#10b981",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: alpha("#10b981", 0.5),
                       },
                     },
                     "& .MuiInputLabel-root.Mui-focused": {
-                      color: "text.primary",
+                      color: "#10b981",
                     },
                   }}
                 />
@@ -247,7 +268,10 @@ export default function AccountPage() {
                   variant="contained"
                   type="submit"
                   disabled={!newPassword || !confirmPassword || isLoading}
-                  sx={buttonSx}
+                  sx={{
+                    ...buttonSx,
+                    width: { xs: "100%", sm: "auto" },
+                  }}
                 >
                   {isLoading ? (
                     <CircularProgress size={24} color="inherit" />

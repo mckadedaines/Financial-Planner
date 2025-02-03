@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendEmailVerification,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -22,10 +23,14 @@ async function registerUser(email, password) {
     );
     const user = userCredential.user;
 
+    // Send verification email
+    await sendEmailVerification(user);
+
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       createdAt: new Date().toISOString(),
       lastLogin: new Date().toISOString(),
+      emailVerified: false,
     });
     return user;
   } catch (error) {
@@ -77,6 +82,15 @@ export const signOutUser = async () => {
     console.error("Sign out failed:", error);
     throw error;
   }
+};
+
+/**
+ * Check if a user's email is verified
+ * @returns {boolean} Whether the user's email is verified
+ */
+export const isEmailVerified = () => {
+  const user = auth.currentUser;
+  return user?.emailVerified ?? false;
 };
 
 export default registerUser;
