@@ -352,61 +352,6 @@ export default function AnalyticsPage() {
             </Box>
           </Card>
         </FullWidthGrid>
-
-        {/* Financial Insights */}
-        <FullWidthGrid>
-          <Card
-            title="Financial Insights"
-            subtitle="Key metrics and recommendations"
-            sx={{ p: 2 }}
-          >
-            <Box sx={{ p: 3 }}>
-              <Typography
-                variant="h6"
-                gutterBottom
-                color="primary"
-                sx={{ mb: 2 }}
-              >
-                Monthly Overview
-              </Typography>
-              <Typography paragraph sx={{ mb: 3 }}>
-                Your average monthly savings rate is 25%, which is excellent!
-                You're consistently saving more than the recommended 20% of your
-                income.
-              </Typography>
-
-              <Typography
-                variant="h6"
-                gutterBottom
-                color="primary"
-                sx={{ mb: 2 }}
-              >
-                Spending Patterns
-              </Typography>
-              <Typography paragraph sx={{ mb: 3 }}>
-                Housing costs represent 35% of your expenses, which is within
-                the recommended range of 25-35%. Consider reviewing your food
-                expenses (25%) as they're slightly above the recommended 15-20%.
-              </Typography>
-
-              <Typography
-                variant="h6"
-                gutterBottom
-                color="primary"
-                sx={{ mb: 2 }}
-              >
-                Recommendations
-              </Typography>
-              <Typography paragraph>
-                1. Consider increasing your emergency fund contributions
-                <br />
-                2. Look for opportunities to reduce food expenses
-                <br />
-                3. Review your entertainment subscriptions for potential savings
-              </Typography>
-            </Box>
-          </Card>
-        </FullWidthGrid>
       </GridLayout>
     </DashboardLayout>
   );
