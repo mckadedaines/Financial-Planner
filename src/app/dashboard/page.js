@@ -184,82 +184,28 @@ function Page() {
                 }}
               >
                 {/* Monthly Income Box */}
-                <Box
-                  sx={{
-                    ...getStatBoxStyle("#10b981"),
-                    p: 2,
-                  }}
-                >
-                  <Typography
-                    color="text.secondary"
-                    variant="body2"
-                    gutterBottom
-                    sx={{ mb: 1 }}
-                  >
-                    Monthly Income
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        wordBreak: "break-word",
-                        fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                        color: "#10b981",
-                        fontWeight: 600,
-                      }}
-                    >
-                      ${income?.toLocaleString() ?? "0"}
-                    </Typography>
-                  </Box>
-                </Box>
+                <AnimatedStatBox
+                  index={0}
+                  style={getStatBoxStyle("#10b981")}
+                  title="Monthly Income"
+                  value={`$${income?.toLocaleString() ?? "0"}`}
+                  color="#10b981"
+                />
 
                 {/* Monthly Budget Box */}
-                <Box
-                  sx={{
-                    ...getStatBoxStyle("#3b82f6"),
-                    p: 2,
-                  }}
-                >
-                  <Typography
-                    color="text.secondary"
-                    variant="body2"
-                    gutterBottom
-                    sx={{ mb: 1 }}
-                  >
-                    Monthly Budget
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        wordBreak: "break-word",
-                        fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                        color: "#3b82f6",
-                        fontWeight: 600,
-                      }}
-                    >
-                      ${budget?.toLocaleString() ?? "0"}
-                    </Typography>
-                  </Box>
-                </Box>
+                <AnimatedStatBox
+                  index={1}
+                  style={getStatBoxStyle("#3b82f6")}
+                  title="Monthly Budget"
+                  value={`$${budget?.toLocaleString() ?? "0"}`}
+                  color="#3b82f6"
+                />
 
                 {/* Existing Stats */}
                 {stats.map((stat, index) => (
                   <AnimatedStatBox
                     key={index}
-                    index={index}
+                    index={index + 2}
                     style={getStatBoxStyle(getStatColor(stat.title))}
                     title={stat.title}
                     value={stat.value}
