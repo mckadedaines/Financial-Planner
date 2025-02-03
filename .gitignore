@@ -7,7 +7,6 @@
 .yarn/install-state.gz
 
 # Firebase Config and Secrets
-firebaseConfig.js
 **/firebase-admin*.json
 **/firebase-config*.json
 .firebase/
